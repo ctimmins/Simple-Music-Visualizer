@@ -1,0 +1,82 @@
+import ddf.minim.analysis.*;
+import ddf.minim.*;
+
+Minim minim;
+AudioInput input;
+FFT fft;
+float bandAmplitude;
+import processing.serial.*;
+Serial myPort;  // Create object from Serial class
+
+
+void setup()
+{
+  size(1024,480);
+  strokeWeight(1); 
+  frameRate(120);    
+  //draw ellipses representing each LED
+  ellipseMode(CENTER);
+  
+   //initialize fft, audio, and minim objects
+  minim = new Minim(this);
+  input = minim.getLineIn();
+  fft = new FFT(input.bufferSize(), 20000);
+  
+  //establish serial comm
+  String portName = "/dev/tty.usbmodem8061";
+  myPort = new Serial(this, portName, 9600);
+ 
+
+}
+
+void draw()
+{
+  background(0);
+  fill(255,0,0);
+  stroke(255);
+  fft.forward(input.mix);
+  
+  float bassAvg = fft.calcAvg(0,100);
+  float midAvg = fft.calcAvg(100,400);
+  float trebAvg = fft.calcAvg(400,2000);
+    
+  byte bassScale = (byte)(bassAvg/80 * 60);
+  if (bassScale > 60) bassScale = 60;
+  byte midScale = (byte)(midAvg/40 * 60);
+  if (midScale > 60) midScale = 60;
+  byte trebScale = (byte)(trebAvg/15 * 60);
+  if (trebScale > 60) trebScale = 60;
+   
+   float yScale = height/60;
+   
+   for( int i = 0; i < bassScale; i++)
+   {  
+     fill(0,255*i/20 +100,0);
+     if ( i >= 20 && i < 40) fill(2*i+180,255,0);
+     if ( i >= 40) fill(255*i/60,255-40*i,0);
+     ellipse(width/6, height - yScale*i, yScale,yScale);
+   }
+   
+      for( int i = 0; i < midScale; i++)
+   {  
+     fill(0,255*i/20,0);
+     if ( i > 20 && i < 40) fill(0,255,255*i/40);
+     if ( i > 40) fill(255*i/60,0,0);
+     ellipse(2*width/6, height - yScale*i, yScale,yScale);
+   }
+   
+       for( int i = 0; i < trebScale; i++)
+   {  
+     fill(0,255*i/20,0);
+     if ( i > 20 && i < 40) fill(0,255,255*i/40);
+     if ( i > 40) fill(255*i/60,0,0);
+     ellipse(width/2, height - yScale*i, yScale,yScale);
+   }
+   
+   byte[] send = {bassScale, midScale, trebScale};
+   
+   myPort.write(send); 
+    
+
+   println(send);
+}
