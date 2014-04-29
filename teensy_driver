@@ -59,12 +59,12 @@ void setup() {
 #define WHITE  0xFFFFFF
  
  void loop() {
- if (Serial.available()) { // If data is available to read,
-  Serial.readBytes(val,2); // read it and store it in val
-  bass = byte(val[0]);
-  mid = byte(val[1]);
-  colorWipe(bass,mid); 
-  Serial.println(bass);
+  if (Serial.available()) { // If data is available to read,
+    Serial.readBytes(val,2); // read it and store it in val
+    bass = byte(val[0]);
+    mid = byte(val[1]);
+    colorWipe(bass,mid); 
+    Serial.println(bass);
  }
 
  }
