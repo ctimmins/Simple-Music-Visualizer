@@ -30,12 +30,24 @@ int ledPin = 13; // Set the pin to digital I/O 4
 byte bass, mid; 
 
 void setup() {
+  // Start serial communication at 9600 baud
   Serial.begin(9600);
   leds.begin();
   leds.show();
+  // Set pin as OUTPUT
+  pinMode(ledPin, OUTPUT); 
   
-  //pinMode(ledPin, OUTPUT); // Set pin as OUTPUT
-   // Start serial communication at 9600 bps
+  //pre-compute the colors and use led on board to indicate when done
+  digitalWrite(ledPin,HIGH);
+  for (int i=0; i<180; i++) {
+    int hue = i * 2;
+    int saturation = 100;
+    int lightness = 50;
+    Colors[i] = makeColor(hue, saturation, lightness);
+  }
+  digitalWrite(ledPin,LOW);
+  
+   
 }
 
 #define RED    0xFF0000
@@ -63,9 +75,8 @@ void setup() {
   
   //--BASS--start from middle and extend toward end
   for (int i = 0; i < bass/2; i++){
-    
-    leds.setPixel(i+30, 0,0,100);
-    leds.setPixel(29-i,0,0,100);    
+    leds.setPixel(i+30, Colors[i]);
+    leds.setPixel(29-i,Colors[i]);    
     if (!leds.busy())leds.show();
 }
   delay(10);
@@ -78,8 +89,8 @@ void setup() {
   
   //--MIDs--starts from 61st LED
   for (int i = 0; i <= mid/2; i++){
-    leds.setPixel(i+90,0,100,0);
-    leds.setPixel(89-i,0,100,0);
+    leds.setPixel(i+90,Colors[i*2]);
+    leds.setPixel(89-i,Colors[i*2]);
     if(!leds.busy())leds.show();
   }
   delay(10);
