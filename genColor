@@ -41,5 +41,3 @@ unsigned int h2rgb(unsigned int v1, unsigned int v2, unsigned int hue)
 	return v1 * 60;
 }
 
-// alternate code:
-// http://forum.pjrc.com/threads/16469-looking-for-ideas-on-generating-RGB-colors-from-accelerometer-gyroscope?p=37170&viewfull=1#post37170
